@@ -13,6 +13,8 @@ imgs_dir = './imgs/20210303/'
 stopwords_file = project_dir + 'data/zh_data/stopwords.txt'
 counter_path = 'tokenizer/counter.pkl'
 
+feature_extract = True # xlnet是否仅作为特征提取器，如果为否，则xlnet也参与训练，进行微调
+
 labels = ['体育', '娱乐', '家居', '房产', '教育', '时尚', '时政', '游戏', '科技', '财经']
 label2id = {l:i for i,l in enumerate(labels)}
 id2label = {i:l for i,l in enumerate(labels)}
