@@ -22,11 +22,12 @@ labels = ['体育', '娱乐', '家居', '房产', '教育', '时尚', '时政', 
 label2id = {l:i for i,l in enumerate(labels)}
 id2label = {i:l for i,l in enumerate(labels)}
 
-LR = 2e-4 # 0.0005
+LR = 5e-4 # 0.0005
 EPOCHS = 20
 
 doc_maxlen = 600 # 每个句子最大长度
 segment_len = 150 # 段长
+overlap = 50
 num_classes = len(labels)
 
 batch_size = 256

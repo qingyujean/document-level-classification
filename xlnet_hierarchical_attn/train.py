@@ -272,6 +272,7 @@ if __name__ == '__main__':
     if ngpu > 1:
         model = torch.nn.DataParallel(model, device_ids=list(range(ngpu)))  # 设置并行执行  device_ids=[0,1]
 
+    init_epoch = 0
     # ===================================================================================================== new add
     # 不从头开始训练，而是从最新的那个checkpoint开始训练，或者可以收到指定从某个checkpoint开始训练
     if train_from_scrach is False and len(os.listdir(os.getcwd() + '/' + save_dir)) > 0:
