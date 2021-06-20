@@ -26,6 +26,7 @@ EPOCHS = 20
 
 doc_maxlen = 600 # 每个句子最大长度
 segment_len = 150 # 段长
+overlap = 50
 num_classes = len(labels)
 
 batch_size = 256

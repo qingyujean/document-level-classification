@@ -233,7 +233,7 @@ def plot_metric(df_history, metric):
     plt.ylabel(metric)
     plt.legend(["train_" + metric, 'val_' + metric])
 
-    plt.savefig(imgs_dir + metric + '.png')  # 保存图片
+    plt.savefig(imgs_dir + 'bert_'+metric + '.png')  # 保存图片
     plt.show()
 
 

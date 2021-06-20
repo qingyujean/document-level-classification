@@ -2,12 +2,12 @@
 
 超长文本分类，解决长距离依赖问题。
 
-暂时只添加了HAN和DPCNN的代码，后续会把后面几个补上。
+暂时只添加了HAN、DPCNN和XLNet+层次attention的代码，后续会把bert的补上。
 
 - **DPCNN**
-- XLNet + 层次attention + fc
-- Bert + overlap_split分段 + fc
 - **HAN**
+- **XLNet + 层次attention + fc**
+- Bert + overlap_split分段 + BiLSTM + fc
 
 ## 实验环境
 |环境 | 版本/型号|
@@ -128,20 +128,19 @@ weighted avg       0.97      0.97      0.97     10000
 
 ````
 
-## 2.HAN
+## 2. HAN
 论文：[HAN：Hierarchical Attention Networks for Document Classification](https://www.aclweb.org/anthology/N16-1174/)
 
 模型架构图：![han模型架构图](./model_imgs/han.jpg)
 
 ### 训练
 
-从学习曲线来看，有一丢丢的过拟合。可以将学习率再调小一些，后面再找时间，继续优化一下。
+从学习曲线来看，模型在epoch=7时在验证集上效果最好，后面的训练中开始有一丢丢的过拟合了。
+可以将学习率再调小一些，后面再找时间，继续优化一下。
 
 后面的测试集上f1_score达到0.96
 
-![han_loss](./han/imgs/20210316/han_loss.png)
-
-![han_acc](./han/imgs/20210316/han_acc.png)
+![han_loss](./han/imgs/20210316/han_loss.png)![han_acc](./han/imgs/20210316/han_acc.png)
 
 #### 部分训练log:
 ````
@@ -228,3 +227,125 @@ evaluating costs: 51.37s
    macro avg       0.96      0.96      0.96     10000
 weighted avg       0.96      0.96      0.96     10000
 ````
+## 3. XLNet + 层次attention + fc
+XLNet论文：[XLNet: Generalized Autoregressive Pretraining for Language Understanding](https://arxiv.org/abs/1906.08237)
+
+XLNet中文预训练模型下载地址：[https://mirrors-i.tuna.tsinghua.edu.cn/hugging-face-models/hfl/chinese-xlnet-base/](https://mirrors-i.tuna.tsinghua.edu.cn/hugging-face-models/hfl/chinese-xlnet-base/)
+
+模型架构图：![han模型架构图](./model_imgs/xlnet_h_attn.jpg)
+
+### 训练
+
+从学习曲线来看，在epoch=11时模型在验证集效果最好。
+
+后面的测试集上f1_score达到0.974
+
+![xlnet_loss](xlnet_hierarchical_attn/imgs/20210423/xlnet_loss.png)![xlnet_acc](xlnet_hierarchical_attn/imgs/20210423/xlnet_acc.png)
+
+#### 部分训练log:
+
+````
+********** sample_out: torch.Size([256, 10])
+Params to learn:
+*************************** start training...
+
+================================================================================2021-06_20 08:23:26
+*************************** [step = 50] loss: 0.909, acc: 0.718
+*************************** [step = 100] loss: 0.572, acc: 0.826
+*************************** [step = 150] loss: 0.443, acc: 0.865
+EPOCH = 1 loss: 0.378, acc: 0.885, val_loss: 0.180, val_acc: 0.950
+
+================================================================================2021-06_20 08:45:40
+*************************** [step = 50] loss: 0.156, acc: 0.953
+*************************** [step = 100] loss: 0.149, acc: 0.955
+*************************** [step = 150] loss: 0.141, acc: 0.958
+EPOCH = 2 loss: 0.138, acc: 0.958, val_loss: 0.144, val_acc: 0.961
+
+================================================================================2021-06_20 09:06:19
+*************************** [step = 50] loss: 0.122, acc: 0.962
+*************************** [step = 100] loss: 0.114, acc: 0.964
+*************************** [step = 150] loss: 0.112, acc: 0.965
+EPOCH = 3 loss: 0.111, acc: 0.965, val_loss: 0.130, val_acc: 0.961
+
+================================================================================2021-06_20 09:26:33
+...
+...
+...
+================================================================================2021-06_20 12:29:44
+*************************** [step = 50] loss: 0.035, acc: 0.988
+*************************** [step = 100] loss: 0.035, acc: 0.989
+*************************** [step = 150] loss: 0.036, acc: 0.988
+EPOCH = 19 loss: 0.034, acc: 0.988, val_loss: 0.117, val_acc: 0.970
+
+================================================================================2021-06_20 12:41:36
+*************************** [step = 50] loss: 0.037, acc: 0.989
+*************************** [step = 100] loss: 0.036, acc: 0.988
+*************************** [step = 150] loss: 0.036, acc: 0.988
+EPOCH = 20 loss: 0.034, acc: 0.989, val_loss: 0.119, val_acc: 0.970
+
+================================================================================2021-06_20 12:53:23
+*************************** training finished...
+*************************** and it costs 4 h 29 min 57.16 s
+Best val Acc: 0.971484
+````
+### 测试
+
+````
+*************************** start evaluating...
+
+================================================================================2021-06_20 13:00:58
+evaluating costs: 106.59s
+*************************** weighted_precision_score:0.974
+*************************** weighted_recall_score:0.974
+*************************** weighted_f1_score:0.974
+*************************** accuracy:0.974
+*************************** confusion_matrix:
+ [[998   0   0   0   1   0   1   0   0   0]
+ [  0 979  10   0   3   3   1   1   3   0]
+ [  0   0 934  42   2  10   2   2   3   5]
+ [  0   1   8 957   5   1  15   0   0  13]
+ [  2   0   3   0 959   2   5   3  21   5]
+ [  0   1   8   0   6 984   1   0   0   0]
+ [  0   2   2  12   7   0 959   1   9   8]
+ [  0   1   0   0   1   6   0 988   4   0]
+ [  0   0  13   0   0   3   0   2 982   0]
+ [  0   0   0   2   0   0   0   0   0 998]]
+*************************** classification_report:
+               precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00      1000
+           1       0.99      0.98      0.99      1000
+           2       0.96      0.93      0.94      1000
+           3       0.94      0.96      0.95      1000
+           4       0.97      0.96      0.97      1000
+           5       0.98      0.98      0.98      1000
+           6       0.97      0.96      0.97      1000
+           7       0.99      0.99      0.99      1000
+           8       0.96      0.98      0.97      1000
+           9       0.97      1.00      0.98      1000
+
+    accuracy                           0.97     10000
+   macro avg       0.97      0.97      0.97     10000
+weighted avg       0.97      0.97      0.97     10000
+````
+
+测试集上平均F1_score 达到了 `0.974`，还是不错的！
+
+### 训练
+
+#### 部分训练log:
+
+### 测试
+
+测试集上平均F1_score 达到了 `0.97`，还是不错的！
+
+## 4. Bert + overlap_split分段 + BiLSTM + fc
+Bert论文：[BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/abs/1810.04805)
+
+Bert中文预训练模型下载地址：[https://mirrors-i.tuna.tsinghua.edu.cn/hugging-face-models/hfl/chinese-bert-wwm-ext/](https://mirrors-i.tuna.tsinghua.edu.cn/hugging-face-models/hfl/chinese-bert-wwm-ext/)
+
+模型架构图：![han模型架构图](./model_imgs/bert_overlap_split_bilstm.jpg)
+
+overlap_split的想法参考自这篇博客：[基于BERT的超长文本分类模型](https://blog.csdn.net/valleria/article/details/105311340)
+，但是原博文中实现时是分成`两阶段`，
+分开执行的，而且现在的实现是`端到端(end-to-end)`的，在应用时更加方便和简洁了。

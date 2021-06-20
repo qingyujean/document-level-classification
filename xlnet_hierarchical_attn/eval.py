@@ -28,7 +28,7 @@ device = torch.device("cuda:0" if (use_cuda and ngpu>0) else "cpu")
 print('*'*8, 'device:', device)
 
 
-# checkpoint = save_dir + 'epoch022_valacc0.955_ckpt.tar'
+# checkpoint = save_dir + 'epoch011_valacc0.971_ckpt.tar'
 checkpoint = save_dir + last_new_checkpoint
 
 
