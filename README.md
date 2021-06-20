@@ -2,12 +2,10 @@
 
 超长文本分类，解决长距离依赖问题。
 
-暂时只添加了HAN、DPCNN和XLNet+层次attention的代码，后续会把bert的补上。
-
 - **DPCNN**
 - **HAN**
 - **XLNet + 层次attention + fc**
-- Bert + overlap_split分段 + BiLSTM + fc
+- **Bert + overlap_split分段 + BiLSTM + fc**
 
 ## 实验环境
 |环境 | 版本/型号|
@@ -31,7 +29,9 @@ gpu| NVIDIA V100 (32G) x 4张
 ## 1. DPCNN
 论文：[DPCNN：Deep Pyramid Convolutional Neural Networks for Text Categorization](https://ai.tencent.com/ailab/media/publications/ACL3-Brady.pdf)
 
-模型架构图：![dpcnn模型架构图](./model_imgs/dpcnn.jpg)
+模型架构图：
+
+![dpcnn模型架构图](./model_imgs/dpcnn.jpg)
 ### 训练
 
 ![dpcnn_loss](./dpcnn/imgs/20210303/dpcnn_loss.png)![dpcnn_acc](./dpcnn/imgs/20210303/dpcnn_acc.png)
@@ -131,7 +131,9 @@ weighted avg       0.97      0.97      0.97     10000
 ## 2. HAN
 论文：[HAN：Hierarchical Attention Networks for Document Classification](https://www.aclweb.org/anthology/N16-1174/)
 
-模型架构图：![han模型架构图](./model_imgs/han.jpg)
+模型架构图：
+
+![han模型架构图](./model_imgs/han.jpg)
 
 ### 训练
 
@@ -232,9 +234,14 @@ XLNet论文：[XLNet: Generalized Autoregressive Pretraining for Language Unders
 
 XLNet中文预训练模型下载地址：[https://mirrors-i.tuna.tsinghua.edu.cn/hugging-face-models/hfl/chinese-xlnet-base/](https://mirrors-i.tuna.tsinghua.edu.cn/hugging-face-models/hfl/chinese-xlnet-base/)
 
-模型架构图：![han模型架构图](./model_imgs/xlnet_h_attn.jpg)
+模型架构图：
+
+![xlnet_hierarchical_attention模型架构图](./model_imgs/xlnet_h_attn.jpg)
 
 ### 训练
+
+因为预训练模型xlnet的参数之多，虽然它并没有参与训练，只是作为特征提取器使用，但是其forward的计算时间也是相对比较久的，
+所以整个训练花的时间大概是`4.5h`。（注意：我是4张V100的gpu卡，如果你只有1张卡，训练的时间必然会更长）
 
 从学习曲线来看，在epoch=11时模型在验证集效果最好。
 
@@ -331,21 +338,117 @@ weighted avg       0.97      0.97      0.97     10000
 
 测试集上平均F1_score 达到了 `0.974`，还是不错的！
 
-### 训练
-
-#### 部分训练log:
-
-### 测试
-
-测试集上平均F1_score 达到了 `0.97`，还是不错的！
 
 ## 4. Bert + overlap_split分段 + BiLSTM + fc
 Bert论文：[BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/abs/1810.04805)
 
 Bert中文预训练模型下载地址：[https://mirrors-i.tuna.tsinghua.edu.cn/hugging-face-models/hfl/chinese-bert-wwm-ext/](https://mirrors-i.tuna.tsinghua.edu.cn/hugging-face-models/hfl/chinese-bert-wwm-ext/)
 
-模型架构图：![han模型架构图](./model_imgs/bert_overlap_split_bilstm.jpg)
+模型架构图：
+
+![bert_overlap_split_bilstm模型架构图](./model_imgs/bert_overlap_split_bilstm.jpg)
 
 overlap_split的想法参考自这篇博客：[基于BERT的超长文本分类模型](https://blog.csdn.net/valleria/article/details/105311340)
 ，但是原博文中实现时是分成`两阶段`，
 分开执行的，而且现在的实现是`端到端(end-to-end)`的，在应用时更加方便和简洁了。
+
+### 训练
+
+因为预训练模型bert的参数之多，虽然它并没有参与训练，只是作为特征提取器使用，但是其forward的计算时间也是相对比较久的，
+所以整个训练花的时间大概是`2.5h`。（注意：我是4张V100的gpu卡，如果你只有1张卡，训练的时间必然会更长）
+
+从学习曲线来看，在epoch=18时模型在验证集效果最好。看图感觉还可以把drop_rate设置小一点，结果可能会更好，
+后面有时间了再尝试一下。
+
+后面的测试集上f1_score达到0.951
+
+![bert_loss](bert_overlap_split_bilstm/imgs/20210620/bert_loss.png)![bert_acc](bert_overlap_split_bilstm/imgs/20210620/bert_acc.png)
+
+#### 部分训练log:
+
+````
+********** sample_out: torch.Size([256, 10])
+Params to learn:
+*************************** start training...
+
+================================================================================2021-06_20 13:12:32
+*************************** [step = 50] loss: 1.091, acc: 0.675
+*************************** [step = 100] loss: 0.735, acc: 0.780
+*************************** [step = 150] loss: 0.597, acc: 0.820
+EPOCH = 1 loss: 0.522, acc: 0.842, val_loss: 0.324, val_acc: 0.895
+
+================================================================================2021-06_20 13:19:11
+*************************** [step = 50] loss: 0.271, acc: 0.916
+*************************** [step = 100] loss: 0.260, acc: 0.920
+*************************** [step = 150] loss: 0.261, acc: 0.920
+EPOCH = 2 loss: 0.259, acc: 0.921, val_loss: 0.360, val_acc: 0.883
+
+================================================================================2021-06_20 13:26:47
+*************************** [step = 50] loss: 0.235, acc: 0.927
+*************************** [step = 100] loss: 0.228, acc: 0.930
+*************************** [step = 150] loss: 0.224, acc: 0.931
+EPOCH = 3 loss: 0.220, acc: 0.933, val_loss: 0.197, val_acc: 0.940
+
+================================================================================2021-06_20 13:34:27
+...
+...
+...
+================================================================================2021-06_20 15:28:24
+*************************** [step = 50] loss: 0.128, acc: 0.960
+*************************** [step = 100] loss: 0.125, acc: 0.959
+*************************** [step = 150] loss: 0.127, acc: 0.959
+EPOCH = 19 loss: 0.125, acc: 0.960, val_loss: 0.189, val_acc: 0.945
+
+================================================================================2021-06_20 15:36:01
+*************************** [step = 50] loss: 0.122, acc: 0.962
+*************************** [step = 100] loss: 0.119, acc: 0.963
+*************************** [step = 150] loss: 0.120, acc: 0.962
+EPOCH = 20 loss: 0.119, acc: 0.962, val_loss: 0.197, val_acc: 0.943
+
+================================================================================2021-06_20 15:43:37
+*************************** training finished...
+*************************** and it costs 2 h 31 min 4.92 s
+Best val Acc: 0.947553
+````
+
+### 测试
+````
+*************************** start evaluating...
+
+================================================================================2021-06_20 16:05:42
+evaluating costs: 60.85s
+*************************** weighted_precision_score:0.951
+*************************** weighted_recall_score:0.951
+*************************** weighted_f1_score:0.951
+*************************** accuracy:0.951
+*************************** confusion_matrix:
+ [[993   1   0   0   2   1   2   1   0   0]
+ [  1 977   3   0   1   4   0   5   8   1]
+ [  0   7 838  92   6  18  10   5   9  15]
+ [  1   4  17 894  11   5  34   1   4  29]
+ [  2   1   5   6 923   3  18   4  34   4]
+ [  0   6  13   0   6 972   1   0   1   1]
+ [  0   2   1  18   3   0 962   1   8   5]
+ [  0   2   0   0   3   3   0 987   4   1]
+ [  0   1   6   1   2   4   0   4 982   0]
+ [  0   0   0  10   1   0   8   0   0 981]]
+*************************** classification_report:
+               precision    recall  f1-score   support
+
+           0       1.00      0.99      0.99      1000
+           1       0.98      0.98      0.98      1000
+           2       0.95      0.84      0.89      1000
+           3       0.88      0.89      0.88      1000
+           4       0.96      0.92      0.94      1000
+           5       0.96      0.97      0.97      1000
+           6       0.93      0.96      0.95      1000
+           7       0.98      0.99      0.98      1000
+           8       0.94      0.98      0.96      1000
+           9       0.95      0.98      0.96      1000
+
+    accuracy                           0.95     10000
+   macro avg       0.95      0.95      0.95     10000
+weighted avg       0.95      0.95      0.95     10000
+````
+
+测试集上平均F1_score 达到了 `0.951`。

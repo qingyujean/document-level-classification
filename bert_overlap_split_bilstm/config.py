@@ -15,7 +15,7 @@ imgs_dir = './imgs/20210620/'
 
 feature_extract = True # bert是否仅作为特征提取器，如果为否，则bert也参与训练，进行微调
 train_from_scrach = True # 是否重头开始训练模型
-last_new_checkpoint = 'epoch028_valacc0.896_ckpt.tar'
+last_new_checkpoint = 'epoch018_valacc0.948_ckpt.tar'
 
 labels = ['体育', '娱乐', '家居', '房产', '教育', '时尚', '时政', '游戏', '科技', '财经']
 label2id = {l:i for i,l in enumerate(labels)}
