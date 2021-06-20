@@ -28,13 +28,14 @@ gpu| NVIDIA V100 (32G) x 4张
 - cnews.val.txt: 验证集(5000条)
 - cnews.test.txt: 测试集(10000条)
 
-## 1.DPCNN
+## 1. DPCNN
+论文：[DPCNN：Deep Pyramid Convolutional Neural Networks for Text Categorization](https://ai.tencent.com/ailab/media/publications/ACL3-Brady.pdf)
 
+模型架构图：![dpcnn模型架构图](./model_imgs/dpcnn.jpg)
 ### 训练
 
-![dpcnn_loss](./dpcnn/imgs/20210303/dpcnn_loss.png)
+![dpcnn_loss](./dpcnn/imgs/20210303/dpcnn_loss.png)![dpcnn_acc](./dpcnn/imgs/20210303/dpcnn_acc.png)
 
-![dpcnn_acc](./dpcnn/imgs/20210303/dpcnn_acc.png)
 
 #### 部分训练log:
 ````
@@ -128,6 +129,9 @@ weighted avg       0.97      0.97      0.97     10000
 ````
 
 ## 2.HAN
+论文：[HAN：Hierarchical Attention Networks for Document Classification](https://www.aclweb.org/anthology/N16-1174/)
+
+模型架构图：![han模型架构图](./model_imgs/han.jpg)
 
 ### 训练
 
