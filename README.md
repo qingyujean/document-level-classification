@@ -2,10 +2,10 @@
 
 超长文本分类，解决长距离依赖问题。
 
-- **DPCNN**
-- **HAN**
-- **XLNet + 层次attention + fc**
-- **Bert + overlap_split分段 + BiLSTM + fc**
+- **DPCNN**，f1_score:0.970
+- **HAN**，f1_score:0.960
+- **XLNet + 层次attention + fc**，f1_score:0.974
+- **Bert + overlap_split分段 + BiLSTM + fc**，f1_score:0.951
 
 ## 实验环境
 |环境 | 版本/型号|
